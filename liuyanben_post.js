@@ -1,7 +1,9 @@
 var express = require('express')
 
+var bodyParser = require('body-parser')
 
 var app = express()
+
 
 
 var comments = [
@@ -29,34 +31,33 @@ var comments = [
 
 app.engine('html',require('express-art-template'))
 
+app.use(bodyParser.urlencoded({extended:false}))
+app.use(bodyParser.json())
 
 app.use('/public/',express.static('./public/'))
 
 
 app.get('/',function(req,res){
-    res.render('index.html',{
+    res.render('index2.html',{
        comments:comments
     })
 })
 
-app.get('/post', function (req,res) {
-    res.render('post.html')
+app.get('/post2', function (req,res) {
+    res.render('post2.html')
+})
+
+//当以 post 请求 /post2 的时候,执行指定的处理函数
+//这样我们就可以用不同的请求方法,让一个请求路径请求多次
+app.post('/post2',function(req,res){
+    // 1. 获取表单 POST 请求体数据
+    // 2. 处理
+    // 3. 发送响应
+            //req.query 只能用于 GET
+    console.log(req.body);
 })
 
 
-app.get('/pinglun', function (req,res) {
-    var comment = req.query
-    comment.dateTime = '2018-10.27 14:13:12'
-    comments.unshift(comment)
-    //express的重定向
-    res.redirect('/')
-//重定向
-    // res.statusCode = 302
-    // res.setHeader('Location','/')
-
-
-
-})
 
 app.listen(3000,function(){
     console.log('running');
