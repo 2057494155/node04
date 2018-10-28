@@ -54,7 +54,10 @@ app.post('/post2',function(req,res){
     // 2. 处理
     // 3. 发送响应
             //req.query 只能用于 GET
-    console.log(req.body);
+    var comment = req.body
+    comment.dateTime = '2018-10-28 20:20:20'
+    comments.unshift(comment)
+    res.redirect('/')
 })
 
 
