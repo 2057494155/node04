@@ -11,6 +11,7 @@
 */
 var fs = require('fs')
 var express = require('express')
+var bodyParser = require('body-parser')
 
 // !express 提供了一种更好的方式 express.Router()
 // !专门用来包装路由的
@@ -46,7 +47,21 @@ router.get('/students/new', function (req, res) {
     res.render('new.html')
 })
 
-router.post('/students/new', function (req, res) {})
+router.post('/students/new', function (req, res) {
+  /*
+     1. 获取表单数据
+     2. 处理
+        将数据保存到 db.json 中,用以持久化
+          先读取 db.json
+           转成对象
+           往对象中 push
+             再转成字符串
+              最后把字符串在此写入文件 db.json 中
+     3. 发送响应
+  */
+  //console.log(req.body);
+
+})
 
 router.get('/students/edit', function (req, res) {})
 

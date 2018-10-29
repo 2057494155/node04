@@ -14,6 +14,12 @@
 var express = require('express')
 var router = require('./router')
 var app = express()
+var bodyParser = require('body-parser')
+
+//! 配置模板引擎和 body-parser 一定要在 app.use(router) 挂载路由之前
+
+app.use(bodyParser.urlencoded({extended:false}))
+app.use(bodyParser.json())
 
 
 app.engine('html', require('express-art-template'))
