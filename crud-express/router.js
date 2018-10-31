@@ -21,11 +21,10 @@ var bodyParser = require('body-parser')
     3. 把 router 导出
 */
 var router = express.Router()
+var Student = require('./students')
 
 router.get('/students', function (req, res) {
-  // readFile 的第二个参数是可选的,传入 utf8是告诉它把读取到的文件直接按照 utf-8 编码转化成我们认识的编码
-  // 除此之外也可以用 data.toString() 方法实现
-  fs.readFile('./db.json', 'utf8', function (err, data) {
+  Student.find(function (err, students) {
     if (err) {
       return res.status(500).send('Server error')
     // 建议加入状态码,更合理
@@ -36,15 +35,12 @@ router.get('/students', function (req, res) {
         '香蕉',
         '橘字'
       ],
-      students: JSON.parse(data).students
-    // 文件中读取的数据一定是字符串
-    // 需要先转化为对象,然后转化为json
+      students: students
     })
   })
 })
-
 router.get('/students/new', function (req, res) {
-    res.render('new.html')
+  res.render('new.html')
 })
 
 router.post('/students/new', function (req, res) {
@@ -59,15 +55,69 @@ router.post('/students/new', function (req, res) {
               最后把字符串在此写入文件 db.json 中
      3. 发送响应
   */
-  //console.log(req.body);
-
+  Student.save(req.body, function (err) {
+    if (err) {
+      return res.status(500).send('Server error')
+    }
+    res.redirect('/students')
+  })
 })
 
-router.get('/students/edit', function (req, res) {})
+/**  渲染编辑学生页面*/
+router.get('/students/edit', function (req, res) {
+  /**
+   *  1. 在客户端的列表页面中处理链接问题 href="/students/edit?id={{$value.id}}" (需要有 id 参数)
+   *  2. 获取要编辑的学生 id ==> req.query.id
+   *  3. 渲染编辑页面:
+   *        根据 id 把学生信息查出来
+   *        使用模板引擎渲染页面
+   */
 
+  // })
+  Student.findById(parseInt(req.query.id), function (err, student) {
+    if (err) {
+      return res.status(500).send('Server error')
+    }
+    res.render('edit.html', {
+      student: student
+    })
+  })
+})
 
-router.post('/students/edit', function (req, res) {})
+/** 处理编辑学生 */
+router.post('/students/edit', function (req, res) {
+  /**
+   * 1. 获取表单数据    req.body
+   * 2. 更新
+   *      Student.updateById()
+   * 3. 发送响应
+   */
+  Student.updateById(req.body, function (err) {
+    if (err) {
+      return res.status(500).send('Server error')
+    }
+    res.redirect('/students')
+  })
+})
 
-router.post('/students/delete', function (req, res) {})
+/**
+ * 处理删除学生
+ * 1. 获取要删除的 id
+ * 2. 根据 id 执行删除操作
+ * 3. 根据结果发送响应
+ */
+router.get('/students/delete', function (req, res) {
+  // console.log(req.query.id)
+  Student.deleteById(req.query.id, function (err) {
+    if (err) {
+      return res.status(500).send('Server error')
+    }
+    res.redirect('/students')
+  })
+})
 
 module.exports = router
+
+/**
+ * 先写调用,再去封装
+ */
